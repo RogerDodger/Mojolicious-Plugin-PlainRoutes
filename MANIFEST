@@ -1,0 +1,10 @@
+Changes
+lib/Mojolicious/Plugin/PlainRoutes.pm
+Makefile.PL
+MANIFEST
+README
+t/00-load.t
+t/01-tokenise.t
+t/manifest.t
+t/pod-coverage.t
+t/pod.t
