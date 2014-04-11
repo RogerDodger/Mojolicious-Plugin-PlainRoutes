@@ -18,7 +18,7 @@ sub register {
 	my $tree = $self->tokenise($fh);
 	close $fh;
 
-	process($app->routes, $tree);
+	$self->process($app->routes, $tree);
 }
 
 sub tokenise {
@@ -210,20 +210,23 @@ sub _tokenise {
 }
 
 sub process {
-	my ($bridge, $tree) = @_;
+	my ($self, $bridge, $tree) = @_;
 
 	for my $node (@$tree) {
 		my $token = ref $node eq 'ARRAY' ? shift @$node : $node;
 		my $route = $bridge->route($token->{path})
-		                    ->via($token->{verb})
+		                     ->via($token->{verb})
 		                      ->to($token->{action});
+
 		if (exists $token->{name}) {
 			$route->name($token->{name});
+		} elsif ($self->autoname) {
+			$route->name($token->{action} =~ s/\W+/-/rg);
 		}
 
 		if (ref $node eq 'ARRAY') {
 			$route->inline(1);
-			process($route, $node);
+			$self->process($route, $node);
 		}
 	}
 }
