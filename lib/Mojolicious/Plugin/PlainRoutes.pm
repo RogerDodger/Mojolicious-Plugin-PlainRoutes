@@ -67,7 +67,7 @@ sub _tokenise {
 
 	# Include the lexical category with the word, e.g., map:
 	#   "/foo" -> { text => "/foo", category => "path" }
-	my @annotatedWords;
+	my @annotated_words;
 	for my $word (@words) {
 		my @cats = grep { $word =~ /^$grammar{$_}$/ } keys %grammar;
 
@@ -75,11 +75,11 @@ sub _tokenise {
 			warn "$word has multiple lexical categories: @cats";
 		}
 
-		push @annotatedWords, { text => $word, category => $cats[0] // '' };
+		push @annotated_words, { text => $word, category => $cats[0] // '' };
 	}
 
 	# Add special EOF word to act as a clause terminator if necessary
-	push @annotatedWords, { text => '', category => 'eof' };
+	push @annotated_words, { text => '', category => 'eof' };
 
 	# Initialise
 	my $root    = [];
@@ -87,16 +87,15 @@ sub _tokenise {
 	my %clause  = ();
 	my $context = 'default';
 
-	# Track these values for helpful error messages
+	# Track for helpful error messages
 	my $col = 1;
 	my $line = 1;
 	my $error = 0;
 
-	# Define this outside the loop scope so that the closure can access it
+	# Define outside the loop scope so that the closure can access it
 	my %word;
 
-	# Called whenever a syntax error is encountered. If ever called ($error =
-	# 1), we croak at the end.
+	# Called whenever a syntax error is encountered.
 	my $syntax_error = sub {
 		$error = 1;
 		my $_col = $col - length $word{text};
@@ -104,7 +103,7 @@ sub _tokenise {
 		          .  qq{"$word{text}" (expected a @_)\n};
 	};
 
-	for (@annotatedWords) {
+	for (@annotated_words) {
 		%word = %$_;
 		$col += length $word{text};
 		if ($word{category} eq 'eol') {
