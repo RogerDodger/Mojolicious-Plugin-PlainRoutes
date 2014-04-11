@@ -20,54 +20,57 @@ cmp_deeply(
 		{
 			action => 'foo#bar',
 			verb => 'GET',
-			url => '/',
+			path => '/',
 		},
 		{
 			action => 'foo#baz',
 			verb => 'GET',
-			url => '/baz',
+			path => '/baz',
 		},
 	],
 	"Simple case"
 );
 
 my $t2 = tokenise(<<EOF);
-ANY /foo -> Foo.do
+ANY /foo -> Foo.do {
 	GET /bar -> Foo.bar
 	GET /baz -> Foo.baz
+}
 EOF
 
 cmp_deeply(
 	$t2,
 	[
 		[
-			{ action => 'foo#do', verb => 'ANY', url => '/foo' },
-			{ action => 'foo#bar', verb => 'GET', url => '/bar' },
-			{ action => 'foo#baz', verb => 'GET', url => '/baz' },
+			{ action => 'foo#do', verb => 'ANY', path => '/foo' },
+			{ action => 'foo#bar', verb => 'GET', path => '/bar' },
+			{ action => 'foo#baz', verb => 'GET', path => '/baz' },
 		],
 	],
 	"One-depth bridge",
 );
 
 my $t3 = tokenise(<<EOF);
-ANY / -> Foo.do
+ANY / -> Foo.do {
 	GET /bar -> Foo.bar
-	ANY /baz -> Foo.baz
+	ANY /baz -> Foo.baz {
 		GET /quux -> Foo.quux
+	}
 	GET /egimosx -> Foo.regex
+}
 EOF
 
 cmp_deeply(
 	$t3,
 	[
 		[
-			{ action => 'foo#do', verb => 'ANY', url => '/' },
-			{ action => 'foo#bar', verb => 'GET', url => '/bar' },
+			{ action => 'foo#do', verb => 'ANY', path => '/' },
+			{ action => 'foo#bar', verb => 'GET', path => '/bar' },
 			[
-				{ action => 'foo#baz', verb => 'ANY', url => '/baz' },
-				{ action => 'foo#quux', verb => 'GET', url => '/quux' },
+				{ action => 'foo#baz', verb => 'ANY', path => '/baz' },
+				{ action => 'foo#quux', verb => 'GET', path => '/quux' },
 			],
-			{ action => 'foo#regex', verb => 'GET', url => '/egimosx' },
+			{ action => 'foo#regex', verb => 'GET', path => '/egimosx' },
 		],
 	],
 	"Two-depth bridge",
