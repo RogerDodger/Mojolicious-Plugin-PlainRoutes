@@ -298,7 +298,7 @@ braces, then it will act as a bridge for the routes contained within them.
 
 =head1 CONFIGURATION
 
-    $self->plugin('PluginRoutes', {
+    $self->plugin('PlainRoutes', {
         # Specify the path of the routes file
         file => $self->home->rel_file('path/to/myapp.routes'),
 
