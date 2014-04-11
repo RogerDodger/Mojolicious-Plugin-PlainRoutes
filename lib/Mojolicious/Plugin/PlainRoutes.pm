@@ -135,10 +135,19 @@ sub _tokenise {
 				$clause{verb} = $word{text};
 			}
 
-			# It's possible we encounter the EOF word here, either because
-			# there are no clauses in the file or the last clause was
-			# terminated by the end of a scope. Anything else is still a
-			# syntax error.
+			# The end of scope may be encountered here if there were two ends
+			# of scope in a row.
+			elsif ($word{category} eq 'scope' && $word{text} eq '}') {
+				if (@nodes == 1) {
+					'verb'->$syntax_error;
+				} else {
+					pop @nodes;
+				}
+			}
+
+			# It's possible we encounter the EOF word here if we just
+			# encountered the end of a scope (or if the input is empty).
+			# Anything else is still a syntax error.
 			elsif ($word{category} ne 'eof') {
 				'verb'->$syntax_error;
 			}
@@ -193,15 +202,15 @@ sub _tokenise {
 				# The end of a scope means that the preceding clause is the
 				# last clause in a bridge.
 				elsif ($word{text} eq '}') {
-					# Can't exit a scope if we haven't entered one
-					if (@nodes == 1) {
-						'verb'->$syntax_error;
-					}
-
 					push @{ $nodes[-1] }, { %clause };
 					%clause = ();
 
-					pop @nodes;
+					# Can't exit a scope if we haven't entered one
+					if (@nodes == 1) {
+						'verb'->$syntax_error;
+					} else {
+						pop @nodes;
+					}
 				}
 			}
 

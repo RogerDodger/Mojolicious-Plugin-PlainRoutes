@@ -76,4 +76,27 @@ cmp_deeply(
 	"Two-depth bridge",
 );
 
+
+my $t4 = tokenise(<<EOF);
+ANY / -> Foo.do {
+	ANY /baz -> Foo.baz {
+		GET /quux -> Foo.quux
+	}
+}
+EOF
+
+cmp_deeply(
+	$t4,
+	[
+		[
+			{ action => 'foo#do', verb => 'ANY', path => '/' },
+			[
+				{ action => 'foo#baz', verb => 'ANY', path => '/baz' },
+				{ action => 'foo#quux', verb => 'GET', path => '/quux' },
+			],
+		],
+	],
+	"Double bridge termination",
+);
+
 done_testing;
