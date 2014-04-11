@@ -8,13 +8,11 @@ has autoname => 0;
 sub register {
 	my ($self, $app, $conf) = @_;
 
-	my $file = $app->home->rel_file(
-		$conf->{filename} // "lib/" . $app->moniker . ".routes"
-	);
-
 	$self->autoname($conf->{autoname});
 
-	open my $fh, '<', $file;
+	$conf->{file} //= $app->home->rel_file("lib/".$app->moniker.".routes");
+
+	open my $fh, '<', $conf->{file};
 	my $tree = $self->tokenise($fh);
 	close $fh;
 
@@ -296,13 +294,13 @@ In lib/myapp.routes:
 =head1 DESCRIPTION
 
 Routes are defined essentially as you would expect. If a route is followed by
-braces, then it will act as a bridge for the contained routes.
+braces, then it will act as a bridge for the routes contained within them.
 
 =head1 CONFIGURATION
 
     $self->plugin('PluginRoutes', {
         # Specify the path of the routes file
-        filename => 'path/to/myapp.routes',
+        file => $self->home->rel_file('path/to/myapp.routes'),
 
         # Give automatic names to the routes, of the form "controller-action"
         autoname => 1,
