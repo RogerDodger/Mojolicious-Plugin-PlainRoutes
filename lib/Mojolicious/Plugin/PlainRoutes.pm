@@ -81,13 +81,36 @@ sub _tokenise {
 	# Add special EOF word to act as a clause terminator if necessary
 	push @annotatedWords, { text => '', category => 'eof' };
 
+	# Initialise
 	my $root    = [];
 	my @nodes   = ($root);
 	my %clause  = ();
 	my $context = 'default';
 
+	# Track these values for helpful error messages
+	my $col = 1;
+	my $line = 1;
+	my $error = 0;
+
+	# Define this outside the loop scope so that the closure can access it
+	my %word;
+
+	# Called whenever a syntax error is encountered. If ever called ($error =
+	# 1), we croak at the end.
+	my $syntax_error = sub {
+		$error = 1;
+		my $_col = $col - length $word{text};
+		print STDERR qq{Syntax error in routes on line $line, col $_col: }
+		          .  qq{"$word{text}" (expected a @_)\n};
+	};
+
 	for (@annotatedWords) {
-		my %word = %$_;
+		%word = %$_;
+		$col += length $word{text};
+		if ($word{category} eq 'eol') {
+			$line += 1;
+			$col = 1;
+		}
 
 		# While in comment context, the parser checks for newlines and
 		# otherwise does nothing.
@@ -117,7 +140,7 @@ sub _tokenise {
 			# terminated by the end of a scope. Anything else is still a
 			# syntax error.
 			elsif ($word{category} ne 'eof') {
-				_syntax_error("verb", $word{text});
+				'verb'->$syntax_error;
 			}
 		}
 
@@ -126,7 +149,7 @@ sub _tokenise {
 			if ($word{category} eq 'path') {
 				$clause{path} = $word{text};
 			} else {
-				_syntax_error("path", $word{text});
+				'path'->$syntax_error;
 			}
 		}
 
@@ -142,7 +165,7 @@ sub _tokenise {
 				# point.
 				delete $clause{arrow};
 			} else {
-				_syntax_error("action", $word{text});
+				'action'->$syntax_error;
 			}
 		}
 
@@ -155,30 +178,24 @@ sub _tokenise {
 				$clause{name} = $word{text};
 			}
 
-			# The clause is terminated by a new scope. This is also only time
-			# that a new scope is syntactically valid. Something like
-			#
-			#   ANY /foo -> Foo.bridge {}
-			#
-			# is a syntax error, because the '}' is not preceded by a complete
-			# clause. This is acceptable because it makes no sense to have a
-			# bridge with no endpoints.
+			# The clause is terminated by a new scope.
 			elsif ($word{category} eq 'scope') {
 				# A new scope means that the preceding clause is a bridge, and
 				# therefore the head of a new branch in the tree.
 				if ($word{text} eq '{') {
-					my $newNode = [];
+					my $newNode = [ { %clause } ];
 					push @{ $nodes[-1] }, $newNode;
 					push @nodes, $newNode;
+
+					%clause = ();
 				}
 
-				# Exiting a scope means that the preceding clause is the last
-				# clause in a bridge. We have to add it before popping the
-				# node.
+				# The end of a scope means that the preceding clause is the
+				# last clause in a bridge.
 				elsif ($word{text} eq '}') {
 					# Can't exit a scope if we haven't entered one
 					if (@nodes == 1) {
-						_syntax_error("verb", $word{text});
+						'verb'->$syntax_error;
 					}
 
 					push @{ $nodes[-1] }, { %clause };
@@ -201,9 +218,17 @@ sub _tokenise {
 			}
 
 			else {
-				_syntax_error("terminator", $word{text});
+				'terminator'->$syntax_error;
 			}
 		}
+	}
+
+	if (@nodes != 1) {
+		'verb or end of scope'->$syntax_error;
+	}
+
+	if ($error) {
+		Carp::croak "Parsing routes failed due to syntax errors";
 	}
 
 	$root;
@@ -229,13 +254,6 @@ sub process {
 			$self->process($route, $node);
 		}
 	}
-}
-
-sub _syntax_error {
-	my ($expected, $found) = @_;
-	Carp::croak "Syntax error in routes file:\n"
-	          . "  Expected: $expected\n"
-	          . "  Found:    `$found`\n";
 }
 
 1;
