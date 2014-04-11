@@ -273,11 +273,40 @@ __END__
 =head1 NAME
 
 Mojolicious::Plugin::PlainRoutes - Plaintext route definitions for Mojolicious
-apps
 
 =head1 SYNOPSIS
 
-Blah blah blah
+In lib/MyApp.pm:
+
+    sub startup {
+        ...
+        $self->plugin('PlainRoutes');
+        ...
+    }
+
+In lib/myapp.routes:
+
+    ANY / -> Foo.do {
+        GET /bar -> Foo.bar
+        ANY /baz -> Foo.baz {
+            GET /quux -> Foo.quux
+        }
+    }
+
+=head1 DESCRIPTION
+
+Routes are defined essentially as you would expect. If a route is followed by
+braces, then it will act as a bridge for the contained routes.
+
+=head1 CONFIGURATION
+
+    $self->plugin('PluginRoutes', {
+        # Specify the path of the routes file
+        filename => 'path/to/myapp.routes',
+
+        # Give automatic names to the routes, of the form "controller-action"
+        autoname => 1,
+    });
 
 =head1 AUTHOR
 
