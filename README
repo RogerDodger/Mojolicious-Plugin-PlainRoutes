@@ -1,6 +1,7 @@
 Mojolicious-Plugin-PlainRoutes
 
-Blah blah blah
+This plugin allows you to write out route definitions in plaintext and have
+them registered by the Mojolicious router.
 
 INSTALLATION
 
