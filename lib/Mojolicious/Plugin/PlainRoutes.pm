@@ -302,10 +302,13 @@ In lib/myapp.routes:
         }
     }
 
+    GET /foo/bar/baz/quux -> Foo::Bar::Baz.quux (fbb-quux)
+
 =head1 DESCRIPTION
 
-Routes are defined as you would expect: a HTTP verb followed by a path and
-then an action/controller pair. (The arrow is optional.)
+Routes are defined very simply: a HTTP verb followed by a path, followed by an
+controller/action. (The arrow is optional.) An optional name for the route can
+be appended with parentheses.
 
 If a route is followed by braces, then it will act as a bridge for the
 contained routes.
