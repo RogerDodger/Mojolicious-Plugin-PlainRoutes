@@ -12,7 +12,7 @@ sub register {
 
 	$conf->{file} //= $app->home->rel_file("lib/".$app->moniker.".routes");
 
-	open my $fh, '<', $conf->{file};
+	open my $fh, '<:utf8', $conf->{file};
 	my $tree = $self->tokenise($fh);
 	close $fh;
 
@@ -251,7 +251,18 @@ sub process {
 
 		if (exists $token->{name}) {
 			$route->name($token->{name});
-		} elsif ($self->autoname) {
+		}
+		elsif (ref $self->autoname eq 'CODE') {
+			my $name = $self->autoname->($token->{verb},
+				$token->{path}, split /#/, $token->{action});
+
+			if (ref $name) {
+				Carp::croak "Autoname callback did not return a string";
+			}
+
+			$route->name($name);
+		}
+		elsif ($self->autoname) {
 			$route->name($token->{action} =~ s/\W+/-/rg);
 		}
 
@@ -304,6 +315,12 @@ braces, then it will act as a bridge for the routes contained within them.
 
         # Give automatic names to the routes, of the form "controller-action"
         autoname => 1,
+
+        # or do it with a callback
+        autoname => sub {
+            my ($verb, $path, $controller, $action) = @_;
+            return "$controller-$action";
+        },
     });
 
 =head1 AUTHOR
