@@ -304,8 +304,11 @@ In lib/myapp.routes:
 
 =head1 DESCRIPTION
 
-Routes are defined essentially as you would expect. If a route is followed by
-braces, then it will act as a bridge for the routes contained within them.
+Routes are defined as you would expect: a HTTP verb followed by a path and
+then an action/controller pair. (The arrow is optional.)
+
+If a route is followed by braces, then it will act as a bridge for the
+contained routes.
 
 =head1 CONFIGURATION
 
@@ -313,7 +316,7 @@ braces, then it will act as a bridge for the routes contained within them.
         # Specify the path of the routes file
         file => $self->home->rel_file('path/to/myapp.routes'),
 
-        # Give automatic names to the routes, of the form "controller-action"
+        # Get automatic names for routes of the form "controller-action"
         autoname => 1,
 
         # or do it with a callback
