@@ -115,11 +115,22 @@ cmp_deeply(
 	"Compact",
 );
 
-my $t6 = tokenise("GET / Foo.do");
 cmp_deeply(
-	$t6,
+	tokenise("GET / Foo.do"),
 	[{ action => 'foo#do', verb => 'GET', path => '/' }],
 	"Ommitted arrow",
+);
+
+cmp_deeply(
+	tokenise("GET / Foo.do (do)"),
+	[{ action => 'foo#do', verb => 'GET', path => '/', name => 'do' }],
+	"Ordinary name",
+);
+
+cmp_deeply(
+	tokenise("GET / Foo.do (GET)"),
+	[{ action => 'foo#do', verb => 'GET', path => '/', name => 'GET' }],
+	"Name containing keyword",
 );
 
 done_testing;
