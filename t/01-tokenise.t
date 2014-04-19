@@ -101,7 +101,7 @@ cmp_deeply(
 
 
 my $t5 = tokenise(<<EOF);
-ANY/ ->Foo.do{GET/baz ->Foo.baz(baz)}
+ANY/ ->Foo.do{GET/baz ->Foo.baz}
 EOF
 
 cmp_deeply(
@@ -109,10 +109,17 @@ cmp_deeply(
 	[
 		[
 			{ action => 'foo#do', verb => 'ANY', path => '/' },
-			{ action => 'foo#baz', verb => 'GET', path => '/baz', name => 'baz' },
+			{ action => 'foo#baz', verb => 'GET', path => '/baz' },
 		],
 	],
 	"Compact",
+);
+
+my $t6 = tokenise("GET / Foo.do");
+cmp_deeply(
+	$t6,
+	[{ action => 'foo#do', verb => 'GET', path => '/' }],
+	"Ommitted arrow",
 );
 
 done_testing;
