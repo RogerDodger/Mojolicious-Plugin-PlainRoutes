@@ -46,7 +46,7 @@ sub _tokenise {
 		arrow      => qr{ -> }x,
 		scope      => qr( { | } )x,
 		action     => qr{ [\w\-:]* \. \w* }x,
-		name       => qr{ \( (\w+) \) }x,
+		name       => qr{ \( \w+ \) }x,
 		eol        => qr{ \n }x,
 		space      => qr{ [^\S\n]+ }x,
 	);
@@ -181,7 +181,7 @@ sub _tokenise {
 			# An optional name for the clause can be appended before the
 			# terminator.
 			if (!exists $clause{name} && $word{category} eq 'name') {
-				$clause{name} = $word{text};
+				$clause{name} = $word{text} =~ s/ ^\( | \)$ //xgr;
 			}
 
 			# The clause is terminated by a new scope.
