@@ -99,13 +99,8 @@ cmp_deeply(
 	"Double bridge termination",
 );
 
-
-my $t5 = tokenise(<<EOF);
-ANY/ ->Foo.do{GET/baz ->Foo.baz}
-EOF
-
 cmp_deeply(
-	$t5,
+	tokenise("ANY/ ->Foo.do{GET/baz ->Foo.baz}"),
 	[
 		[
 			{ action => 'foo#do', verb => 'ANY', path => '/' },
