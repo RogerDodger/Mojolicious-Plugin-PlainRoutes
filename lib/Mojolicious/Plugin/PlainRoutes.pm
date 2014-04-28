@@ -40,9 +40,9 @@ sub _tokenise {
 	$input =~ s/\r/\n/g;
 
 	my %grammar = (
-		comment    => qr{\# [^\n]*}x,
+		comment    => qr{ \# [^\n]* }x,
 		verb       => qr{ ANY | DELETE | GET | PATCH | POST | PUT }x,
-		path       => qr{ / [^#\s]*}x,
+		path       => qr{ / [^#\s]* }x,
 		arrow      => qr{ -> }x,
 		scope      => qr( { | } )x,
 		action     => qr{ [\w\-:]* \. \w* }x,
