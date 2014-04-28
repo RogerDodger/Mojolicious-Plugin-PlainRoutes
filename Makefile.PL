@@ -5,6 +5,8 @@ all_from 'lib/Mojolicious/Plugin/PlainRoutes.pm';
 author   q{Cameron Thornton <cthor@cpan.org>};
 license  'perl';
 
+perl_version '5.014';
+
 requires (
 	"Mojolicious" => "4.60",
 );
