@@ -249,12 +249,13 @@ sub process {
 		                     ->via($token->{verb})
 		                      ->to($token->{action});
 
+		my $p = $route->pattern;
 		if (exists $token->{name}) {
 			$route->name($token->{name});
 		}
 		elsif (ref $self->autoname eq 'CODE') {
-			my $name = $self->autoname->($token->{verb},
-				$token->{path}, split /#/, $token->{action});
+			my $name = $self->autoname->($route->via->[0], $p->pattern,
+				@{$p->defaults}{qw/controller action/});
 
 			if (ref $name) {
 				Carp::croak "Autoname callback did not return a string";
@@ -263,7 +264,7 @@ sub process {
 			$route->name($name);
 		}
 		elsif ($self->autoname) {
-			$route->name($token->{action} =~ s/\W+/-/rg);
+			$route->name(join '-', @{$p->defaults}{qw/controller action/});
 		}
 
 		if (ref $node eq 'ARRAY') {
