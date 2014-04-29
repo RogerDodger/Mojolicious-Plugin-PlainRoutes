@@ -18,7 +18,7 @@ META.yml
 README
 t/00-load.t
 t/01-tokenise.t
-t/boilerplate.t
+t/02-app.t
+t/03-autoname.t
 t/manifest.t
-t/pod-coverage.t
 t/pod.t
