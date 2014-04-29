@@ -14,6 +14,7 @@ requires (
 test_requires (
 	"Test::More" => "0.98",
 	"Test::Deep" => "0.110",
+	"File::Temp" => "0.22",
 );
 
 auto_install;
