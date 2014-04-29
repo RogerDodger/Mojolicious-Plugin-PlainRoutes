@@ -117,15 +117,21 @@ cmp_deeply(
 );
 
 cmp_deeply(
-	tokenise("GET / Foo.do (do)"),
+	tokenise("GET / -> Foo.do (do)"),
 	[{ action => 'foo#do', verb => 'GET', path => '/', name => 'do' }],
 	"Ordinary name",
 );
 
 cmp_deeply(
-	tokenise("GET / Foo.do (GET)"),
+	tokenise("GET / -> Foo.do (GET)"),
 	[{ action => 'foo#do', verb => 'GET', path => '/', name => 'GET' }],
 	"Name containing keyword",
+);
+
+cmp_deeply(
+	tokenise("GET / -> # Foo.do \n Foo.bar"),
+	[{ action => 'foo#bar', verb => 'GET', path => '/' }],
+	"Basic comment",
 );
 
 done_testing;
