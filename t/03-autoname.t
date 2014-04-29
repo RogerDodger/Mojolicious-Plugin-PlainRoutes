@@ -22,6 +22,8 @@ sub _test_pair {
 	is $app->routes->children->[0]->name, $name, $msg;
 }
 
+_test_pair("foo", "no autoname", 0);
+
 _test_pair('bar-baz', "default autoname", 1);
 
 _test_pair('GET /foo -> bar.baz', "custom autoname", sub {
