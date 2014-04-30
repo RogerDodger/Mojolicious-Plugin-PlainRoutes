@@ -1,8 +1,9 @@
+use 5.014;
 package Mojolicious::Plugin::PlainRoutes;
+# ABSTRACT: Plaintext route definitions for Mojolicious
+
 use Mojo::Base 'Mojolicious::Plugin';
 use Mojo::Util qw/decamelize/;
-
-our $VERSION = '0.01';
 
 has autoname => 0;
 
@@ -13,7 +14,7 @@ sub register {
 
 	$conf->{file} //= $app->home->rel_file("lib/".$app->moniker.".routes");
 
-	open my $fh, '<:utf8', $conf->{file};
+	open my $fh, '<:encoding(UTF-8)', $conf->{file};
 	my $tree = $self->tokenise($fh);
 	close $fh;
 
@@ -281,10 +282,6 @@ __END__
 
 =pod
 
-=head1 NAME
-
-Mojolicious::Plugin::PlainRoutes - Plaintext route definitions for Mojolicious
-
 =head1 SYNOPSIS
 
 In lib/MyApp.pm:
@@ -334,21 +331,10 @@ Anything following a "#" is a comment until the end of the line, as in Perl.
         },
     });
 
-=head1 AUTHOR
-
-Cameron Thornton <cthor@cpan.org>
-
 =head1 SUPPORT
 
 Use the issue tracker on the Github repository for bugs/feature requests:
 
     https://github.com/RogerDodger/Mojolicious-Plugin-PlainRoutes/issues
-
-=head1 LICENSE AND COPYRIGHT
-
-Copyright 2014 Cameron Thornton.
-
-This program is free software; you can redistribute it and/or modify it
-under the terms of Perl version 5.
 
 =cut
