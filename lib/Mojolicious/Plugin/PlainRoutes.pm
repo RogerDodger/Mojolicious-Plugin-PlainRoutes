@@ -296,6 +296,7 @@ In lib/MyApp.pm:
 
 In lib/myapp.routes:
 
+    # Routes file for MyApp.pm
     ANY / -> Foo.do {
         GET /bar -> Foo.bar
         ANY /baz -> Foo.baz {
@@ -313,6 +314,8 @@ be appended with parentheses.
 
 If a route is followed by braces, then it will act as a bridge for the
 contained routes.
+
+Anything following a "#" is a comment until the end of the line, as in Perl.
 
 =head1 CONFIGURATION
 
