@@ -247,9 +247,12 @@ sub process {
 
 	for my $node (@$tree) {
 		my $token = ref $node eq 'ARRAY' ? shift @$node : $node;
+
 		my $route = $bridge->route($token->{path})
-		                     ->via($token->{verb})
-		                      ->to($token->{action});
+		                   ->to($token->{action});
+		if ($token->{verb} ne 'ANY') {
+			$route->via($token->{verb});
+		}
 
 		my $p = $route->pattern;
 		if (exists $token->{name}) {

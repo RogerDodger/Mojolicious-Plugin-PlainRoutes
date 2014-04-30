@@ -28,7 +28,7 @@ is $#{ $r->children }, 2, "Router children count";
 my $bridge = $r->children->[0];
 ok $bridge->inline, "First child inline";
 is $#{ $bridge->children }, 2, "First child children count";
-is $bridge->via->[0], "ANY", "First child via";
+is $bridge->via, undef, "First child via";
 is $bridge->pattern->pattern, '/game/:id', "First child pattern";
 is $bridge->pattern->defaults->{action}, 'fetch', "First child action";
 is $bridge->pattern->defaults->{controller}, 'game', "First child controller";
