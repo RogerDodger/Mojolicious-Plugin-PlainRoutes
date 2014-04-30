@@ -1,5 +1,6 @@
 package Mojolicious::Plugin::PlainRoutes;
 use Mojo::Base 'Mojolicious::Plugin';
+use Mojo::Util qw/decamelize/;
 
 our $VERSION = '0.01';
 
@@ -164,8 +165,8 @@ sub _tokenise {
 			if (!exists $clause{arrow} && $word{category} eq 'arrow') {
 				$clause{arrow} = 1;
 			} elsif ($word{category} eq 'action') {
-				$clause{action} = lcfirst $word{text};
-				$clause{action} =~ s/\./#/;
+				my ($action, $controller) = split /\./, $word{text};
+				$clause{action} = decamelize($action) . "#$controller";
 
 				# The clause needn't carry this useless information after this
 				# point.
