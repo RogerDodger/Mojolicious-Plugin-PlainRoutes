@@ -306,9 +306,9 @@ In lib/myapp.routes:
 
 =head1 DESCRIPTION
 
-Routes are defined very simply: a HTTP verb followed by a path, followed by an
-controller/action. (The arrow is optional.) An optional name for the route can
-be appended with parentheses.
+Routes are defined as an HTTP verb, followed by a path, followed by a
+controller/action pair. (The arrow is optional.) An optional name for the
+route can be appended with parentheses.
 
 If a route is followed by braces, then it will act as a bridge for the
 contained routes.
