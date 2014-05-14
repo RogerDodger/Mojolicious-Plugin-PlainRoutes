@@ -48,7 +48,7 @@ sub _tokenise {
 		arrow      => qr{ -> }x,
 		scope      => qr( { | } )x,
 		action     => qr{ [\w\-:]* \. \w* }x,
-		name       => qr{ \( \w+ \) }x,
+		name       => qr{ \( [^)]+ \) }x,
 		eol        => qr{ \n }x,
 		space      => qr{ [^\S\n]+ }x,
 	);
