@@ -259,7 +259,7 @@ sub process {
 			$route->name($token->{name});
 		}
 		elsif (ref $self->autoname eq 'CODE') {
-			my $name = $self->autoname->($route->via->[0], $p->pattern,
+			my $name = $self->autoname->($route->via->[0], $p->unparsed,
 				@{$p->defaults}{qw/controller action/});
 
 			if (ref $name) {
