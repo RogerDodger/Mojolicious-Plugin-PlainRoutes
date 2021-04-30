@@ -248,10 +248,10 @@ sub process {
 	for my $node (@$tree) {
 		my $token = ref $node eq 'ARRAY' ? shift @$node : $node;
 
-		my $route = $bridge->route($token->{path})
+		my $route = $bridge->any($token->{path})
 		                   ->to($token->{action});
 		if ($token->{verb} ne 'ANY') {
-			$route->via($token->{verb});
+			$route->methods($token->{verb});
 		}
 
 		my $p = $route->pattern;
@@ -259,7 +259,7 @@ sub process {
 			$route->name($token->{name});
 		}
 		elsif (ref $self->autoname eq 'CODE') {
-			my $name = $self->autoname->($route->via->[0], $p->unparsed,
+			my $name = $self->autoname->($route->methods->[0], $p->unparsed,
 				@{$p->defaults}{qw/controller action/});
 
 			if (ref $name) {
